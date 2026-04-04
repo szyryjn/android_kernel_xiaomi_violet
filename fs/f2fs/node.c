@@ -85,8 +85,8 @@ bool f2fs_available_free_memory(struct f2fs_sb_info *sbi, int type)
 						sizeof(struct ino_entry);
 		mem_size >>= PAGE_SHIFT;
 		res = mem_size < ((avail_ram * nm_i->ram_thresh / 100) >> 1);
-	} else if (type == READ_EXTENT_CACHE || type == AGE_EXTENT_CACHE) {
-		enum extent_type etype = type == READ_EXTENT_CACHE ?
+	} else if (type == EX_READ || type == EX_BLOCK_AGE) {
+		enum extent_type etype = type == EX_READ ?
 						EX_READ : EX_BLOCK_AGE;
 		struct extent_tree_info *eti = &sbi->extent_tree[etype];
 
@@ -97,7 +97,7 @@ bool f2fs_available_free_memory(struct f2fs_sb_info *sbi, int type)
 		res = mem_size < ((avail_ram * nm_i->ram_thresh / 100) >> 1);
 	} else if (type == INMEM_PAGES) {
 		/* it allows 20% / total_ram for inmemory pages */
-		mem_size = get_pages(sbi, F2FS_INMEM_PAGES);
+		mem_size = get_pages(sbi, INMEM_PAGES);
 		res = mem_size < (val.totalram / 5);
 	} else {
 		if (!sbi->sb->s_bdi->wb.dirty_exceeded)

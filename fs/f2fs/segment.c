@@ -461,12 +461,12 @@ void f2fs_balance_fs_bg(struct f2fs_sb_info *sbi, bool from_bg)
 		return;
 
 	/* try to shrink extent cache when there is no enough memory */
-	if (!f2fs_available_free_memory(sbi, READ_EXTENT_CACHE))
+	if (!f2fs_available_free_memory(sbi, EX_READ))
 		f2fs_shrink_read_extent_tree(sbi,
 				READ_EXTENT_CACHE_SHRINK_NUMBER);
 
 	/* try to shrink age extent cache when there is no enough memory */
-	if (!f2fs_available_free_memory(sbi, AGE_EXTENT_CACHE))
+	if (!f2fs_available_free_memory(sbi, EX_BLOCK_AGE))
 		f2fs_shrink_age_extent_tree(sbi,
 				AGE_EXTENT_CACHE_SHRINK_NUMBER);
 
@@ -1796,7 +1796,7 @@ static int issue_discard_thread(void *data)
 				msecs_to_jiffies(wait_ms));
 
 		if (sbi->gc_mode == GC_URGENT_HIGH ||
-			!f2fs_available_free_memory(sbi, DISCARD_CACHE))
+			!f2fs_available_free_memory(sbi, DISCARD_TIME))
 			__init_discard_policy(sbi, &dpolicy, DPOLICY_FORCE,
 						MIN_DISCARD_GRANULARITY);
 		else
@@ -1822,7 +1822,7 @@ static int issue_discard_thread(void *data)
 			continue;
 		}
 
-		if (sbi->gc_mode == GC_URGENT)
+		if (sbi->gc_mode == GC_URGENT_HIGH)
 			__init_discard_policy(sbi, &dpolicy, DPOLICY_FORCE, 1);
 
 		sb_start_intwrite(sbi->sb);
